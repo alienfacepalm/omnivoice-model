@@ -1,0 +1,46 @@
+---
+description: JSON training/data config conventions for OmniVoice
+globs: examples/config/**/*.json,**/*config*.json
+alwaysApply: false
+---
+
+# OmniVoice Configs
+
+Training uses paired JSON files passed to `omnivoice.cli.train`:
+
+- `--train_config` — optimization, model, attention backend
+- `--data_config` — dataset shards and sampling
+
+## Finetune template
+
+Start from `examples/config/train_config_finetune.json` + `data_config_finetune.json`.
+
+| Field | Fine-tune value | Notes |
+|-------|-----------------|-------|
+| `init_from_checkpoint` | `"k2-fsa/OmniVoice"` | Required for fine-tune |
+| `steps` | 5000 | Scale with data size |
+| `learning_rate` | 5e-5 | Lower than scratch (1e-4) |
+| `attn_implementation` | `"flex_attention"` or `"sdpa"` | Use `_sdpa` config if GPU lacks flex |
+
+## SDPA-only fields
+
+When `attn_implementation != "flex_attention"`, set:
+
+```json
+{
+  "max_sample_tokens": 2000,
+  "min_sample_tokens": 50,
+  "max_batch_size": 64
+}
+```
+
+## Data config
+
+Point shard paths at tokenized WebDataset output, not raw WAV directories.
+
+## Do not
+
+- Change `output_dir` inside JSON — pass via CLI `--output_dir`
+- Commit paths with machine-specific absolute dirs; use relative `data/` or `exp/` paths
+
+See `docs/training.md` for full field reference.

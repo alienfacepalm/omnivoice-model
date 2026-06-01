@@ -1,0 +1,37 @@
+---
+description: Core OmniVoice project context and agent behavior
+alwaysApply: true
+---
+
+# OmniVoice Core
+
+OmniVoice is multilingual zero-shot TTS (600+ languages). Primary modes: voice cloning (`ref_audio`), voice design (`instruct`), auto voice.
+
+## Architecture map
+
+- Model/API: `omnivoice/models/omnivoice.py`
+- CLIs: `omnivoice/cli/` → `omnivoice-demo`, `omnivoice-infer`, `omnivoice-infer-batch`
+- Training: `omnivoice/cli/train.py` + `omnivoice/training/`
+- Docs: `docs/`, entry point `AGENTS.md`
+
+## Agent defaults
+
+- Read `AGENTS.md` and relevant `docs/` before large changes.
+- Minimize diff scope; match neighboring code style.
+- Output audio is **24 kHz mono** `np.ndarray`.
+- Default model id: `k2-fsa/OmniVoice`.
+- Use isolated venv; pin torch + torchaudio + torchvision together.
+- Do not add impersonation/fraud-enabling features.
+
+## When editing
+
+| Change type | Also check |
+|-------------|------------|
+| `generate()` API | `docs/generation-parameters.md`, CLI infer flags |
+| Voice design | `docs/voice-design.md`, `omnivoice/utils/voice_design.py` |
+| Training | `examples/config/`, `docs/training.md` |
+| New CLI flag | `infer.py`, `infer_batch.py`, `demo.py` consistently |
+
+## Skills
+
+Use `.cursor/skills/omnivoice-setup`, `omnivoice-inference`, or `omnivoice-training` for workflow steps.
